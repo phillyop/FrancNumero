@@ -1,5 +1,24 @@
 # Changelog
 
+## Round 3: widgets
+
+Three widgets covering the Home Screen and Lock Screen. Setup is in **WIDGETS.md**.
+
+| Widget | Sizes | Idea |
+|--------|-------|------|
+| **Today's page** | Small, Medium, Lock Screen circular / rectangular / inline | The run as a bookmark ribbon, the week as hand-stamped circles, a red **"Vu"** stamp and mark once the page is written. A nudge from 18:00 and a **"Last call !"** from 21:00 when a run is at risk. The Lock Screen ring has one arc per day. |
+| **Un nombre** | Small, Medium, Lock Screen circular / rectangular / inline | Passive learning: a new number every three hours from *your* weak, due and new numbers, with how it's built. An arrow for another, a tap to open it, and a setting for what it draws from. |
+| **Le Tableau** | Medium, Large | The 101-number mastery chart on the Home Screen, with level, run and the chapter you're on. |
+
+How it's wired:
+- The app writes a small snapshot into a shared App Group folder and refreshes the widgets after a finished page,
+  a torn page, a test-out and each new day. Widgets work out their state from the date, so they stay right after
+  midnight without the app running.
+- Widget taps deep-link into the app (`francnumero://number/77`, `lesson`, `tableau`, ...). The one project-file change
+  is `INFOPLIST_FILE = Config/AppInfo.plist`, which registers that scheme.
+- Without the App Group the app is unaffected and the widgets show "Open FrancNumero". "Un nombre" still works from a built-in list.
+- Tinted and clear Home Screens (iOS 18) and the Lock Screen's single-tint rendering are handled.
+
 ## Round 2: your feedback
 
 | # | You asked for | What changed | Where to tune it |

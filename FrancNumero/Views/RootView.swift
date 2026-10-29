@@ -32,10 +32,33 @@ struct RootView: View {
             if phase == .active {
                 store.refreshDay()
                 store.scheduleNotifications()
+                store.refreshWidgets()
             }
+        }
+        .onOpenURL { url in
+            handle(url)
         }
         .task {
             await store.syncNotifications()
+        }
+    }
+
+    /// Where a widget tap lands.
+    private func handle(_ url: URL) {
+        guard store.data.hasOnboarded, let target = WidgetLink.parse(url) else { return }
+        switch target {
+        case .today:
+            tab = 0
+        case .lesson:
+            tab = 0
+            if store.lessonRequest == nil { store.lessonRequest = LessonRequest() }
+        case .tableau:
+            tab = 1
+        case .cahier:
+            tab = 2
+        case .number(let n):
+            tab = 1
+            store.pendingNumber = n
         }
     }
 

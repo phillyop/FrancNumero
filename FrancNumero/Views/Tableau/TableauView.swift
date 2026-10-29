@@ -38,6 +38,15 @@ struct TableauView: View {
                 .presentationDetents([.large])
                 .presentationDragIndicator(.visible)
         }
+        .onAppear { consumePendingNumber() }
+        .onChange(of: store.pendingNumber) { _, _ in consumePendingNumber() }
+    }
+
+    /// A widget can ask for a number. Show it, then forget the request.
+    private func consumePendingNumber() {
+        guard let n = store.pendingNumber else { return }
+        store.pendingNumber = nil
+        if FrenchNumber.range.contains(n) { selectedNumber = NumberSelection(id: n) }
     }
 
     // MARK: Header

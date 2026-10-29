@@ -58,6 +58,8 @@ final class AppStore: ObservableObject {
     @Published private(set) var data: AppData
     @Published private(set) var todayKey: String
     @Published var lessonRequest: LessonRequest?
+    /// A number a widget asked to open. The Tableau shows it, then clears this.
+    @Published var pendingNumber: Int?
 
     private static let storageKey = "francnumero.appdata.v1"
 
@@ -83,11 +85,21 @@ final class AppStore: ObservableObject {
         if let raw = try? JSONEncoder().encode(copy) {
             UserDefaults.standard.set(raw, forKey: Self.storageKey)
         }
+        WidgetSync.write(self)
+    }
+
+    /// Rewrites the widgets' snapshot and asks them to redraw.
+    func refreshWidgets() {
+        WidgetSync.write(self)
+        WidgetSync.reload()
     }
 
     func refreshDay() {
         let now = DayKey.key(for: Date())
-        if now != todayKey { todayKey = now }
+        if now != todayKey {
+            todayKey = now
+            refreshWidgets()
+        }
     }
 
     // MARK: Derived state
@@ -212,6 +224,8 @@ final class AppStore: ObservableObject {
             Self.advanceUnlocks(&d)
         }
 
+        refreshWidgets()
+
         let opened: Chapter? = (passed && data.unlockedCount > unlockedBefore)
             ? Curriculum.chapters[unlockedBefore]
             : nil
@@ -243,6 +257,7 @@ final class AppStore: ObservableObject {
             d.sessions.append(SessionLog(day: today, grade: 0, points: 0, torn: true, guided: false))
             Self.trim(&d)
         }
+        refreshWidgets()
     }
 
     /// Banks a finished page: points, streak, log, stickers.
@@ -271,6 +286,7 @@ final class AppStore: ObservableObject {
 
         let levelAfter = Levels.level(for: data.points)
         scheduleNotifications()
+        refreshWidgets()
 
         return LessonSummary(
             grade: grade,
@@ -345,6 +361,7 @@ final class AppStore: ObservableObject {
                 }
             }
         }
+        refreshWidgets()
     }
 
     func setAutoPlay(_ on: Bool) {
@@ -377,6 +394,7 @@ final class AppStore: ObservableObject {
 
     func resetEverything() {
         mutate { $0 = AppData() }
+        refreshWidgets()
         Task { await NotificationManager.refresh(enabled: false, hour: 19, minute: 0, streak: 0, doneToday: false) }
     }
 

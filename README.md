@@ -3,6 +3,8 @@
 A daily French-numbers trainer built as a school exercise book. It is meant to sit
 beside Duolingo or any course, and cover the part they rush.
 
+**Widgets:** Home Screen (small, medium, large) and Lock Screen. See **WIDGETS.md**.
+
 ## Open it
 
 1. Unzip, then double-click **`FrancNumero.xcodeproj`**.
@@ -76,12 +78,17 @@ FrancNumero/
 │   ├── Models/    FrenchNumber · Curriculum · Exercise · LessonEngine · Streak · Rewards
 │   ├── Store/     AppData · AppStore
 │   ├── Services/  SpeechService · NotificationManager · SoundEffects · Haptics
+│   ├── Widgets/   WidgetSnapshot (shared with the extension) · WidgetSync
 │   ├── Design/    Theme · PaperBackground · Components
 │   ├── Views/     Home · Lesson · Tableau · Cahier · Onboarding
 │   ├── Sounds/                    (four synthesised effects)
 │   └── Assets.xcassets            (adaptive colours, app icon)
+├── WidgetFiles/                   the widget extension's source, ready to drop into a new target
+├── Config/AppInfo.plist           registers the francnumero:// link scheme widgets use
+├── WIDGETS.md                     what the widgets do and how to add them (about 5 minutes)
 ├── FrancNumeroTests/              (optional unit tests, see the file header)
 ├── Tools/make_sounds.py           regenerates the sound effects (needs numpy and scipy)
+├── Tools/check_widget_files.py    keeps the two copies of the shared widget file identical
 ├── CHANGELOG.md                   what changed in round 2
 ├── AUDIT.md                       what was wrong and what changed
 └── README.md
@@ -103,6 +110,10 @@ and ran round 1 successfully, which confirms the project file and the approach.)
   (typed-words limits, spelling card placement), the test-out in every chapter (a pass always clears it) and simulated
   learners at 60%, 80% and 95% accuracy.
 - The sounds were checked numerically (levels, no clipping, no clicks at the edges, small-speaker energy) and by spectrogram.
+
+Widgets (round 3): the widget code parses, references nothing from the app, and its one shared file is
+identical in both targets. The run, week and rotation logic was checked against the app's own rules on
+5,000 random states. The widget target itself has to be added in Xcode (see WIDGETS.md).
 
 **What I could not check:** type errors that only the compiler sees, and **how anything sounds or feels**. I can't hear the
 sounds or feel the vibrations, and the simulator has no haptics, so test those on a real iPhone. If a sound is off, the
